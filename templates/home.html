@@ -1,27 +1,44 @@
 <!-- @format -->
 
 {% extends "base.html" %} {% block content %}
-<h1>All Posts</h1>
-<div class="row w-100 ">
-  {% for post in posts %}
-  <div class="col-sm-3 mb-3 mb-sm-0">
-    <div class="card m-2">
-      <div class="card-body">
-        <h5 class="card-title">{{post.title}}</h5>
-        <p class="card-text">{{post.content}}</p>
-        <p class="text-body-secondary">Author: {{post.author.first_name}}</p>
-        <div class="py-1">
-          {% for category in post.categories.all %}
-          <button class="btn btn-secondary btn-sm">{{category.name}}</button>
-          {% endfor %}
-        </div>
-        <div>
-          <a class="btn btn-primary mx-2" href="{% url "edit_post" post.id %}">Edit</a
-          ><a class="btn btn-warning" href="{% url "delete_post" post.id %}">Delete</a>
+<section class="p-4">
+  <h1>Total Posts {{ posts | length }}</h1>
+<div class="d-flex flex-wrap">
+  <div class="col-2">
+    {% for cat in categories %}
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="category"
+        id="{{cat.name}}"
+      />
+      <label class="form-check-label" for="{{cat.name}}">
+        <a href="{% url "category_wise_post" cat.slug %}">{{cat.name}}</a>
+      </label>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="col-10">
+    <div class="d-flex row">
+      {% for post in posts %}
+      <div class="col-sm-3 mb-3 mb-sm-0">
+        <div class="card m-2">
+          <div class="card-body">
+            <h5 class="card-title">{{post.title}}</h5>
+            <p class="card-text">{{post.content}}</p>
+            <p class="text-body-secondary">Author: {{post.author.first_name}}</p>
+            <div class="py-1">
+              {% for category in post.categories.all %}
+              <button class="btn btn-secondary btn-sm">{{category.name}}</button>
+              {% endfor %}
+            </div>
+          </div>
         </div>
       </div>
+      {% endfor %}
     </div>
   </div>
-  {% endfor %}
 </div>
+</section>
 {% endblock %}

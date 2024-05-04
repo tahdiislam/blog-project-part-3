@@ -1,7 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
+<section class='p-5'>
 <h1>
-    {% comment %} Welcome {{user}} {% endcomment %}
+    Welcome {{user.first_name}} {{user.last_name}}
 </h1>
+<div class="btn-group-vertical p-5 " role="group" aria-label="Vertical button group">
+    <a href="{% url "my_posts" %}" type="button" class="btn btn-warning">My Posts</a>
+    <a href="{% url "add_post" %}" type="button" class="btn btn-success">Add a New Post</a>
+    <a href="{% url "edit_profile" %}" type="button" class="btn btn-outline-danger ">Edit Profile</a>
+    <a href="{% url "change_pass" %}" type="button" class="btn btn-info">Change Password</a>
+</div>
+</section>
 {% endblock  %}
