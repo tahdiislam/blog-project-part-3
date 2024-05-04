@@ -1,8 +1,14 @@
 <!-- @format -->
 
-{% extends "base.html" %} {% block content %} {% load crispy_forms_tags %}
-<form action="" method="post" style="width: 50%; margin: auto">
-  {% csrf_token %} {{form|crispy}}
+{% extends "base.html" %} {% block content %}
+{% load crispy_forms_tags %}
+<form action="" method="post" style="width: 50%; margin: auto" novalidate>
+  <h1>{{type}}</h1>
+  {% csrf_token %}
+  <!--{{form|crispy}}-->
+  {% for fm in form %} {{fm.label_tag}} {{fm}}
+  <p class="text-danger">{{fm.errors | striptags}}</p>
+  {% endfor %}
   <input class="btn btn-warning" type="submit" value="Submit" />
 </form>
 {% endblock %}
