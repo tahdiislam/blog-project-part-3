@@ -5,6 +5,8 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from posts.models import Post
 from django.contrib import messages
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import reverse_lazy
 
 
 # Create your views here.
@@ -38,10 +40,29 @@ def login_user(request):
         form = AuthenticationForm()
     return render(request, "authors/add_author.html", {"form": form, "type": "Login"})
 
+class UserLoginView(LoginView):
+    template_name = "authors/add_author.html"
+    def get_success_url(self) -> str:
+        return reverse_lazy('profile')
+    def form_valid(self, form):
+        messages.success(self.request, 'Logged in successfully')
+        return super().form_valid(form)
+    def form_invalid(self, form):
+        messages.warning(self.request, 'Information is incorrect')
+        return super().form_invalid(form)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["type"] = 'Login'
+        return context
+    
 
 def logout_user(request):
     logout(request)
     return redirect("login")
+
+class UserLogoutView(LogoutView):
+    def get_success_url(self):
+        return reverse_lazy('login')
 
 
 @login_required
