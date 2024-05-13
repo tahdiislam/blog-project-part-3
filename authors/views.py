@@ -1,4 +1,8 @@
+from django.core.handlers.wsgi import WSGIRequest
+from django.http import HttpRequest
+from django.http.response import HttpResponse as HttpResponse
 from django.shortcuts import render, redirect
+from django.template.response import TemplateResponse
 from .forms import RegisterForm, ChangeUserForm
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
@@ -61,9 +65,10 @@ def logout_user(request):
     return redirect("login")
 
 class UserLogoutView(LogoutView):
-    def get_success_url(self):
-        return reverse_lazy('login')
-
+    template_name = 'authors/add_author.html'
+    def post(self, request, *args, **kwargs):
+        logout(request)
+        return super().get(request, *args, **kwargs)
 
 @login_required
 def my_post(request):

@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 from .models import Post
 from django.contrib.auth.decorators import login_required
-from django.views.generic import CreateView, UpdateView, DeleteView
+from django.views.generic import CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 
 
 # Create your views here.
@@ -19,6 +20,7 @@ def add_post(request):
         form = PostForm()
     return render(request, "posts/add_post.html", {"form": form})
 
+@method_decorator(login_required, name='dispatch')
 class AddPostCreateView(CreateView):
     model = Post
     form_class = PostForm
@@ -43,6 +45,7 @@ def edit_post(request, id):
     #     form = PostForm()
     return render(request, "posts/edit_post.html", {"form": form})
 
+@method_decorator(login_required, name='dispatch')
 class EditPostView(UpdateView):
     model = Post
     form_class = PostForm
@@ -57,8 +60,33 @@ def delete_post(request, id):
     post.delete()
     return redirect("all_posts")
 
+@method_decorator(login_required, name='dispatch')
 class DeletePostView(DeleteView):
     model = Post
     template_name = 'posts/delete.html'
-    success_url = reverse_lazy('profile')
+    success_url = reverse_lazy('my_posts')
     pk_url_kwarg = 'id'
+
+@method_decorator(login_required, name='dispatch')
+class DetailsPostView(DetailView):
+    model = Post
+    template_name = 'posts/post_details.html'
+    pk_url_kwarg = 'id'
+
+    def post(self, request, *args, **kwargs):
+        comment_form = CommentForm(data=self.request.POST)
+        post = self.get_object()
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.post = post
+            new_comment.save()
+        return self.get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = self.object
+        comments = post.comments.all()
+        comment_form = CommentForm()
+        context['comments'] = comments
+        context['comment_form'] = comment_form
+        return context

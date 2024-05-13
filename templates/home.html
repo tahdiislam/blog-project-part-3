@@ -24,9 +24,12 @@
       {% for post in posts %}
       <div class="col-sm-3 mb-3 mb-sm-0">
         <div class="card m-2">
+          {% if post.image.url is not None %}
+          <img src="{{post.image.url}}" class="card-img-top" alt="...">
+          {% endif %}
           <div class="card-body">
-            <h5 class="card-title">{{post.title}}</h5>
-            <p class="card-text">{{post.content}}</p>
+            <h5 class="card-title"> <a class="text-decoration-none text-black" href="{% url "details_post" post.id %}">{{post.title}}</a> </h5>
+            <p class="card-text">{{post.content | truncatewords:10}}</p>
             <p class="text-body-secondary">Author: {{post.author.first_name}}</p>
             <div class="py-1">
               {% for category in post.categories.all %}
